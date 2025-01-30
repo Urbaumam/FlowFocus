@@ -1,20 +1,22 @@
 let timer = null;
 let blocklist = [];
+let schedule = [];
 
-// Load blocklist and start persistent listener
-chrome.storage.sync.get(["blocklist"], (data) => {
+// Load blocklist and schedule from storage
+chrome.storage.sync.get(["blocklist", "schedule"], (data) => {
   blocklist = data.blocklist || [];
+  schedule = data.schedule || [];
 });
 
 chrome.runtime.onInstalled.addListener(() => {
-  chrome.storage.sync.set({ blocklist: [] });
+  chrome.storage.sync.set({ blocklist: [], schedule: [] });
 });
 
 // Handle blocking websites
 chrome.webNavigation.onBeforeNavigate.addListener(
   (details) => {
     const url = new URL(details.url);
-    if (blocklist.includes(url.hostname)) {
+    if (isSiteBlocked(url.hostname)) {
       chrome.tabs.update(details.tabId, {
         url: chrome.runtime.getURL("blocked.html"),
       });
@@ -22,6 +24,22 @@ chrome.webNavigation.onBeforeNavigate.addListener(
   },
   { url: [{ schemes: ["http", "https"] }] }
 );
+
+function isSiteBlocked(hostname) {
+  const now = new Date();
+  const currentHour = now.getHours();
+  const currentDay = now.getDay();
+
+  // Check if hostname is in the blocklist and if it's within a scheduled block period
+  for (const rule of schedule) {
+    if (rule.hostname === hostname && rule.days.includes(currentDay)) {
+      if (currentHour >= rule.startHour && currentHour < rule.endHour) {
+        return true;
+      }
+    }
+  }
+  return blocklist.includes(hostname);
+}
 
 // Focus timer logic
 function startTimer(duration) {
@@ -54,6 +72,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   } else if (message.command === "add_website") {
     blocklist.push(message.website);
     chrome.storage.sync.set({ blocklist });
+  } else if (message.command === "schedule_blockage") {
+    schedule.push(message.rule);
+    chrome.storage.sync.set({ schedule });
   }
   sendResponse({ status: "success" });
 });

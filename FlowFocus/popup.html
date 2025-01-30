@@ -17,6 +17,22 @@
       <button id="add-website">Add Website</button>
       <ul id="blocklist"></ul>
     </div>
+    <div>
+      <h2>Schedule Blockages</h2>
+      <input
+        type="text"
+        id="schedule-website"
+        placeholder="e.g., facebook.com"
+      />
+      <label for="days">Days (0=Sun, 1=Mon...):</label>
+      <input type="text" id="days" placeholder="e.g., 1,2,3" />
+      <label for="start-hour">Start Hour:</label>
+      <input type="number" id="start-hour" min="0" max="23" />
+      <label for="end-hour">End Hour:</label>
+      <input type="number" id="end-hour" min="0" max="23" />
+      <button id="schedule-block">Schedule Block</button>
+      <ul id="schedule-list"></ul>
+    </div>
     <script src="popup.js"></script>
   </body>
 </html>
