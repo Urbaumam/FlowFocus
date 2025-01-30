@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>FlowFocus</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <h1>FlowFocus</h1>
+    <div>
+      <label for="timer">Focus Timer (minutes):</label>
+      <input type="number" id="timer" value="25" />
+      <button id="start-timer">Start Timer</button>
+    </div>
+    <div>
+      <h2>Blocklist</h2>
+      <input type="text" id="website-input" placeholder="e.g., youtube.com" />
+      <button id="add-website">Add Website</button>
+      <ul id="blocklist"></ul>
+    </div>
+    <script src="popup.js"></script>
+  </body>
+</html>
